@@ -1,0 +1,5 @@
+* Extensions
+- Can you change the PIN in the code and figure out how to still get the LED to blink?
+- Can you make 2 LEDs blink at the same time from a single pin?
+- Can you make 2 LEDs blink at the same time from two different pins?
+- Can you make 2 LEDs blink alternatively?
