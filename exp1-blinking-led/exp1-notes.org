@@ -1,3 +1,7 @@
+* General notes
+- How much of the code should be given to them? Maybe give them a choice between building off of the previous experiment
+  to try to make the LED controlled by a push button, and just giving them the code?
+
 * Extensions
 - Can you change the PIN in the code and figure out how to still get the LED to blink?
 - Can you make 2 LEDs blink at the same time from a single pin?

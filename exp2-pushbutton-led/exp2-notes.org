@@ -1,0 +1,9 @@
+* General notes
+- Some pushbuttons are a little sticky; if you don't firmly press down on them, they can get stuck on and make you think
+  your circuit or your code is wrong.
+- This exp is basically 2 circuits. Build each in turn, starting with the LED circuit from exp1.
+
+* Extensions
+- Can you make the LED turn on when the button is not pressed?
+- Can you make it take 2 button presses to turn on the LED?
+- Can you make 1 LED turn on when the button is being pressed, and another when it is not pressed?

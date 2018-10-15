@@ -1,5 +1,5 @@
 /**
- * @file blinking-led.ino
+ * @file pushbutton-led.ino
  *
  * This is free and unencumbered software released into the public domain.
  * Anyone is free to copy, modify, publish, use, compile, sell, or
@@ -26,24 +26,28 @@
  * For more information, please refer to <http://unlicense.org/>
  */
 
-/*
- * The pin # of the LED we are going to use.
- */
-#define LED_PIN 13
+/* The pin # of the pushbutton */
+const int BTN_PIN = 2;
 
-/*
- * 1-time setup code that runs during initialization.
- */
+/* The pin # of the LED */
+const int LED_PIN1 = 12;
+const int LED_PIN2 = 8;
+
+/* 1-time setup code that runs during initialization. */
 void setup(void) {
-  pinMode(LED_PIN, OUTPUT);
+  pinMode(LED_PIN1, OUTPUT);
+  pinMode(LED_PIN2, OUTPUT);
+  pinMode(BTN_PIN, INPUT);
 }
 
-/*
- * Main code, which will run forever.
- */
-void loopvoid() {
-digitalWrite(LED_PIN, HIGH);
-delay(1000);
-digitalWrite(LED_PIN, LOW);
-delay(1000);
+/* Main code, which will run forever. */
+void loop(void) {
+  int btn_state = digitalRead(BTN_PIN);
+  if (HIGH == btn_state) {
+    digitalWrite(LED_PIN1, HIGH);
+    digitalWrite(LED_PIN2, LOW);
+  } else {
+    digitalWrite(LED_PIN1, LOW);
+    digitalWrite(LED_PIN2, HIGH);
+  }
 }

@@ -1,0 +1,12 @@
+* Introduction
+- Should probably walk everyone through the very first blinking LED project, so they see how to use the IDE, program the
+  board, and do a bit of programming. If things go well, this might also be a good idea to do periodically, so if new
+  people come to the classes, they can get a nice intro without feeling lost.
+
+* Construction
+- How much of circuit diagram stuff should I go into? Will it help? Basic stuff like voltage, current, resistance, are
+  necessary at least.
+
+* Safety
+- Don't worry about shorting/breaking stuff. Try not to, but some of that is part of the learning experience.
+- If you aren't sure if something will short out, ask!
