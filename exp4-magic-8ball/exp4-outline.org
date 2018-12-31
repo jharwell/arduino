@@ -1,0 +1,73 @@
+#+OPTIONS: toc:nil
+
+# ()convertfrompdf:t
+[[./exp4-magic-8ball-1.pdf]]
+
+# ()convertfrompdf:t
+[[./exp4-magic-8ball-2.pdf]]
+
+* Setup
+
+First you will need to download, unzip, and install the Arduino Integrated Development Environment (IDE) from
+https://www.arduino.cc/en/Main/Donate (does not need admin privileges).
+
+* How it works
+
+The Magic 8 Ball, a novelty toy created in the 1950s, is made of a hollow sphere in which a 20-sided die floated in
+alcohol. When you ask the ball a question and shake it, one side of the die floats up and displays your answer in the
+ball’s window. For this project, you'll use a random number generator (a computer version of rolling a die) that will
+generate a number between 0 and 8 to simulate shaking the ball. In this project you will ask a question, and then press
+the pushbutton on the circuit to get your answer.
+
+The potentiometer is a variable valued resistor that controls how much electricity will flow to the LCD screen. More
+electricity = brighter LCD, less electricity = dimmer LCD.
+
+=QUESTION=
+
+How does an LCD screen work? How does a potentiometer work, and when might they be useful? (hint: think of visual and
+audio related devices)
+
+* Building The Circuit
+
+The schematics for the circuits you will be building is below. The first schematic is for the LCD screen part, and the
+second is for the pushbutton. You should substitute the pushbutton circuit where the tilt switch is in the first
+schematic.
+
+# ()convertfrompdf:t
+[[./exp4-magic-8ball-5.pdf]]
+
+# ()convertfrompdf:t
+[[./exp4-magic-8ball-6.pdf]]
+
+
+* Programming the Arduino
+
+The base code for programming the Arduino is provided. Using the Arduino IDE, open the =.ino= file.
+
+=PAUSE=
+
+The IDE allows you to do 4 things: edit the code, verify the code is correct (i.e. does not contain syntax
+errors), upload the code to the Arduino, and view the diagnostic output of things as they run on the Arduino.
+
+Uploading to the Arduino is easy! Just click the Upload arrow in the IDE.
+
+* The fortune teller code
+
+The fortune teller comes with a stock set of responses, you may want to change them to be something more to your
+liking. You can modify what is between the quotes in the =lcd.print()= lines of the code. =lcd.print()= is a /function/,
+meaning that it is a helper that you can ask to do something for you. In this case, you are asking it to tell the LCD
+screen to print something specific for you.
+
+The main part of the code is the =switch()= statement, which controls what the fortune teller's response will be. Each
+time a new random number is generated (i.e. the computerized die is rolled), the resulting number is put into one of the
+8 "boxes" of the switch statement. The switch statement acts as a set of boxes at a candy store: each type of candy that
+comes it for an employee to stock has to be put in its correct box, and the contents of the boxes can't be mixed, or the
+customers will be unhappy. The =switch()= statement does the same thing in the code!
+
+* Extending The Code
+
+Once you have the fortune teller working to your liking try the following:
+
+- Increasing the number of fortunes from the original 8 to 10 (for example).
+- Change the code so that you have to HOLD the pushbutton while asking your question, and then release it to get the
+  answer.

@@ -1,0 +1,86 @@
+#+OPTIONS: toc:nil
+
+# ()convertfrompdf:t
+[[./exp3-ghost-detector1.pdf]]
+
+# ()convertfrompdf:t
+[[./exp3-ghost-detector2.pdf]]
+
+* Setup
+
+First you will need to download, unzip, and install the Arduino Integrated Development Environment (IDE) from
+https://www.arduino.cc/en/Main/Donate (does not need admin privileges).
+
+* Building The Circuit
+
+The schematic for the circuit you will be building is below.
+
+# ()convertfrompdf:t
+[[./exp3-ghost-detector6.pdf]]
+
+# ()convertfrompdf:t
+[[./exp3-ghost-detector4.pdf]]
+
+=PAUSE=
+
+What is a circuit? Why are resistors needed? Why can resistors be placed in any direction in a circuit, but LEDs
+only work if they are placed in a certain direction.
+
+* Programming the Arduino
+
+The base code for programming the Arduino is provided. Using the Arduino IDE, open the =.ino= file.
+
+=PAUSE=
+
+The IDE allows you to do 4 things: edit the code, verify the code is correct (i.e. does not contain syntax
+errors), upload the code to the Arduino, and view the diagnostic output of things as they run on the Arduino.
+
+The bare wire picks up the signal from the electromagnetic fields in the atmosphere and sends a value between 0 and 1023
+to the Arduino (this is done by a special kind of circuit, an Analog-to-Digital Converter, or ADC for short ). The base
+code evaluates the reading from the analog pin to determine how many LEDs should be on or off in sequence to indicate
+the strength of the electromagnetic signal. For example, 1023 would be the highest value, so all LEDs would be lit; a
+reading of 550 would light five LEDs. The sketch loops to continuously read the analog input, and the LED lights
+constantly move to show the reading. If you find that the EMF readings set off your LED sequence to the maxi- mum level
+every time, reduce the senseLimit value to compensate.  The sketch takes an average of 25 number readings each time it
+loops through, and uses the average from those readings to mitigate big fluctuations that may cause the LEDs to light up
+too quickly.
+
+=PAUSE=
+
+Can you map each part of the description above to lines in the code?
+
+* Tuning The Code
+
+You may notice that your detector is not that sensitive, or that it is TOO sensitive (i.e. all LEDs are always on). This
+can be fixed in the code by changing the thresholds that each LED turns on at. For example, if one additional LED turns
+on every time the reading goes up by 100, and that is not sensitive enough, you could make one additional LED turn on
+every time the reading goes up by 50 to make it more sensitive.
+
+
+* Extending The Code
+
+Once you have the ghost detector working try adding some sounds via one or more buzzers that beep at increasing speeds
+or different patterns depending on the reading. The buzzers we have are called /piezo/ buzzers. They are not like a
+regular speaker that you might think of. It uses a material that’s piezoelectric, which means it changes shape when you
+apply electricity to it. By adhering a piezo-electric disc to a thin metal plate, and then applying electricity, we can
+bend the metal back and forth, which in turn creates noise. The faster you bend the material, the higher the pitch of
+the noise that’s produced. This rate is called frequency. Again, the higher the frequency, the higher the pitch of the
+noise we hear. So basically, by shocking the plate over and over really fast, we can make noise.
+
+
+You should following the same idea as the LED circuits you built:
+
+1. Assign a new pin on the Arduino to your new buzzer (such as 12 or 13), and add this definition to the code.
+2. The buzzers are similar to LEDs, in that they only work when plugged in a certain way, and they need a resistor
+   between their negative end and ground.
+3. Once you have the circuit built, you are ready to add the buzzer trigger into the code! The functions you will need
+   are:
+
+   =Tone(int pin, int frequency)=, which controls which pin gets the buzzer signal and what the frequency of the sound
+   will be.
+
+   =noTone(int pin)=, which turns off the buzzing signal on the specified pin.
+
+   Can you figure out how to play a tone when the maximum sensor reading is observed (and all the LEDs are on) ? What
+   about playing a different tone or pattern depending on what the sensor reading is (i.e. going up in pitch the more
+   LEDs are on) ?

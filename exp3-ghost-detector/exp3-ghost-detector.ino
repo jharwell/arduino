@@ -46,8 +46,6 @@ int led7 = 8;
 int led8 = 9;
 int led9 = 10;
 
-int buzzer = 13;
-
 int readings[NUM_READINGS];
 int reading_index = 0;
 int reading_sum = 0;
@@ -89,11 +87,16 @@ void loop(void) {
     /* Remap the constrained value to the range [1, 1023] */
     val = map(val, 1, SENSE_LIMIT, 1, 1023);
 
+    /*
+     * Remove the previous reading at the current index in the reading array,
+     * and add the new value in its place.
+     */
     reading_sum -= readings[reading_index];
     readings[reading_index] = val;
     reading_sum += readings[reading_index];
     reading_index = reading_index + 1;
 
+    /* reached the end of the array--loop back to 0 */
     if (reading_index >= NUM_READINGS) {
       reading_index = 0;
     }
@@ -110,11 +113,11 @@ void loop(void) {
     digitalWrite(led8, reading_average > 800 ? HIGH : LOW);
     digitalWrite(led9, reading_average > 900 ? HIGH : LOW);
 
-    if (reading_average > 900) {
-      tone(buzzer, 1000);
+    if (reading_average >= 900) {
+      tone(13, 1000);
     } else {
-      noTone(buzzer);
+      noTone(13);
     }
-    Serial.println(reading_average); // use output to aid in calibrating 
+    Serial.println(reading_average); // use output to aid in calibrating
   }
 } /* loop() */

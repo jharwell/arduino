@@ -1,0 +1,72 @@
+#+OPTIONS: toc:nil
+
+# ()convertfrompdf:t
+[[./exp5-magic-8ball-1.pdf]]
+
+# ()convertfrompdf:t
+[[./exp5-magic-8ball-2.pdf]]
+
+* Setup
+
+First you will need to download, unzip, and install the Arduino Integrated Development Environment (IDE) from
+https://www.arduino.cc/en/Main/Donate (does not need admin privileges).
+
+* How it works
+
+The Arduino melody uses a piezo buzzer to create frequencies that resemble recognizable notes. You use the Arduino IDE
+to give the order, rate, and duration of the notes to play a specific tune.  Piezos are inexpensive buzzers often used
+in small toys. A piezo element without its plastic housing looks like a gold metallic disc with connected positive
+(typically red) and negative (typically black) wires.  A piezo is capable only of making a clicking sound, which we
+create by applying voltage. We can make recognizable notes by getting the piezo to click hundreds of times a second at a
+particular frequency, so first we need to know the frequency of the different tones we want. Table 7-1 shows the notes
+and their corresponding frequen- cies. Period is the duration of time, in microseconds, at which the frequency is
+created. We halve this number to get the timeHigh value, which is used in the code to create the note.
+
+<insert table with notes/frequencies here>
+
+The code sends a square wave of the appropriate frequency to the piezo, generating the corresponding tone (see Project 2
+for more on waveform). The tones are calculated through the following equation:
+
+#+BEGIN_EXAMPLE
+timeHigh = period / 2
+         = 1 / (2 * tone_frequency)
+#+END_EXAMPLE
+
+Turning the potentiometer up or down causes the pin connected to it to read a different value, which we use to set the
+overall tempo of the melody. We then use the calculated tempo to play the melody, and each time a specific note is
+played, the corresponding LED will light up.
+
+
+* Building The Circuit
+
+The schematics for the circuits you will be building is below.
+
+# ()convertfrompdf:t
+[[./exp5-strobe-melody_bb.pdf]]
+
+
+* Programming the Arduino
+
+The base code for programming the Arduino is provided. Using the Arduino IDE, open the =.ino= file.
+
+=PAUSE=
+
+The IDE allows you to do 4 things: edit the code, verify the code is correct (i.e. does not contain syntax
+errors), upload the code to the Arduino, and view the diagnostic output of things as they run on the Arduino.
+
+Uploading to the Arduino is easy! Just click the Upload arrow in the IDE.
+
+* The Melody Code
+
+In order to use the piezoelectric buzzer to play a tune we need to tell it 4 things:
+
+1. How many notes are in the melody. This is the =MELODY_LENGTH= constant.
+2. The names of the musical notes in the melody. This is the =notes= array in the code.
+3. How long to play each musical note for in the melody (in terms of beats). This is the =beats= array in the code.
+4. How fast to play the melody. We use a potentiometer to make the melody play faster/slower depending on the value
+   read.
+
+* Extending The Code
+
+Once you have gotten the simple melody to play, try going online to find a short melody you like (such as one from a
+video game or movie), and see if you can figure out the notes and durations and get it to play!
