@@ -31,12 +31,40 @@
  ******************************************************************************/
 #define POT_PIN A0 // analog input pin connected to potentiometer
 #define SPEAKER_PIN 13   // digital output for piezo buzzer
-#define MELODY_LENGTH 15 // # of notes in melody
-const char note_names[8] = { 'c', 'd', 'e', 'f', 'g', 'a', 'b', 'C' };
 
-char notes[MELODY_LENGTH] = "ccggaagffeeddc ";
-int beats[MELODY_LENGTH] = {1,1,1,1,1,1,2,1,1,1,1,1,1,2,4};
 const int note_leds[8] = {5,6,7,8,9,10,11,12};
+
+/*
+ * Definitions for twinkle twinkle little star
+ */
+#if 1
+#define MELODY_LENGTH 15 // # of notes in melody
+
+const char note_names[8] = { 'c', 'd', 'e', 'f', 'g', 'a', 'b', 'C' };
+int note_pitches[8] = { 1915, 1700, 1519, 1432, 1275, 1136, 1014, 956 };
+char notes[MELODY_LENGTH] = "ccggaagffeeddc";
+int beats[MELODY_LENGTH] = {1,1,1,1,1,1,2,1,1,1,1,1,1,2,4};
+
+/*
+ * Definitions for Harry potter theme
+ */
+#elif 0
+
+#define MELODY_LENGTH 15 // # of notes in melody
+const char note_names[8] = { 'b', 'e', 'g', 'f', 'B', 'A', 'F', 'E' };
+char notes[MELODY_LENGTH] = "begfeBAFegfEfb";
+int beats[MELODY_LENGTH] = {2,3,1,2,4,2,5,5,3,1,2,4,2,5};
+int note_pitches[8] = { 1014, // b
+                        1519, // e
+                        1275, // g
+                        1432, // f
+                        506, // B2
+                        568, // A2
+                        1351, // D#
+                        1608, // Eb
+};
+
+#endif
 
 /*******************************************************************************
  * Functions
@@ -64,10 +92,8 @@ void loop(void) {
     if (notes[i] == ' ') {
       delay(beats[i] * tempo);
     } else {
-            led = select_led(notes[i]);
-            digitalWrite(led, HIGH);
-
-  Serial.println(led);
+      led = select_led(notes[i]);
+      digitalWrite(led, HIGH);
       play_note(notes[i], beats[i] * tempo);
     }
 
@@ -108,8 +134,6 @@ void play_tone(int frequency, int duration) {
  *                 microseconds.
  */
 void play_note(char note, int duration) {
-  int note_pitches[8] = { 1915, 1700, 1519, 1432, 1275, 1136, 1014, 956 };
-
   for (int i = 0; i < 8; ++i) {
     if (note_names[i] == note) {
       play_tone(note_pitches[i], duration);
