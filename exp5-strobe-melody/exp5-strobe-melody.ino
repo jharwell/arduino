@@ -37,7 +37,7 @@ const int note_leds[8] = {5,6,7,8,9,10,11,12};
 /*
  * Definitions for twinkle twinkle little star
  */
-#if 1
+#if 0
 #define MELODY_LENGTH 15 // # of notes in melody
 
 const char note_names[8] = { 'c', 'd', 'e', 'f', 'g', 'a', 'b', 'C' };
@@ -48,7 +48,7 @@ int beats[MELODY_LENGTH] = {1,1,1,1,1,1,2,1,1,1,1,1,1,2,4};
 /*
  * Definitions for Harry potter theme
  */
-#elif 0
+#elif 1
 
 #define MELODY_LENGTH 15 // # of notes in melody
 const char note_names[8] = { 'b', 'e', 'g', 'f', 'B', 'A', 'F', 'E' };
