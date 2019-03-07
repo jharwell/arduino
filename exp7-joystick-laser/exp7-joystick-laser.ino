@@ -117,10 +117,10 @@ void loop(void) {
 
   xpos = analogRead(XPOS_PIN);     // read and store the x position location of the joystick
 
-  xpos = map(xpos,0,1023,900,2100);  //map the analog read x values to the 0-180 servo values
+  xpos = map(xpos,0,1023,0,180);  //map the analog read x values to the 0-180 servo values
   ypos = analogRead(YPOS_PIN);     // read and store the y position of the joystick
 
-  ypos = map(ypos,0,1023,900,2100);  //map the analog read y values to the 0-180 servo values
+  ypos = map(ypos,0,1023,0,180);  //map the analog read y values to the 0-180 servo values
 
   xservo.write(xpos);             // move the X Location servo to the x position the joystick is at
   yservo.write(ypos);             // move the Y Location servo to the y position the joystick is at
