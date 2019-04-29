@@ -34,6 +34,41 @@
 #include <string.h>
 
 /*******************************************************************************
+ * Constant Definitions
+ ******************************************************************************/
+/*
+ * The # of digits in the secret # the arduino will generate.
+ */
+#define NUM_DIGITS 3
+
+/*
+ * The maximum # of guesses to guess the secret #.
+ */
+#define MAX_GUESSES 10
+
+#define KEYPAD_ROWS 4
+#define KEYPAD_COLS 3
+
+const char* kCorrect = "You Got It!";
+const char* kFermi = "Fermi";
+const char* kPico = "Pico";
+const char* kBAGELS = "BAGELS";
+const char keys[KEYPAD_ROWS][KEYPAD_COLS] = {
+  {'1', '2', '3'},
+  {'4', '5', '6'},
+  {'7', '8', '9'},
+  {'*', '0', '#'}
+};
+byte row_pins[KEYPAD_ROWS] = {0,1,2,3};
+byte col_pins[KEYPAD_COLS] {4,5,6};
+
+/*******************************************************************************
+ * Macros
+ ******************************************************************************/
+#define XSTR(a) _XSTR(a)
+#define _XSTR(a) #a
+
+/*******************************************************************************
  * Structure Definitions
  ******************************************************************************/
 /**
@@ -46,7 +81,7 @@ struct numstr {
    * @brief The array of chars that constitute the string representation of the
    * #.
    */
-  char chars[4];
+  char chars[NUM_DIGITS+1];
 
   /**
    * @brief How many chars in the chars array are currently valid.
@@ -60,37 +95,14 @@ struct numstr {
 };
 
 struct clues {
-  const char** strs;
+  const char* strs[NUM_DIGITS];
   int len;
 };
 
 /*******************************************************************************
- * Constant Definitions
- ******************************************************************************/
-#define MAX_GUESSES 10
-#define LCD_PIN 6
-#define KEYPAD_ROWS 4
-#define KEYPAD_COLS 4
-#define XSTR(a) _XSTR(a)
-#define _XSTR(a) #a
-
-const char* kCorrect = "You Got It!";
-const char* kFermi = "Fermi";
-const char* kPico = "Pico";
-const char* kBAGELS = "BAGELS";
-const char keys[KEYPAD_ROWS][KEYPAD_COLS] = {
-  {'1', '2', '3', 'A'},
-  {'4', '5', '6', 'B'},
-  {'7', '8', '9', 'C'},
-  {'*', '0', '#', 'D'}
-};
-byte row_pins[KEYPAD_ROWS] = {2,3,4,5};
-byte col_pins[KEYPAD_COLS] {6,7,8,9};
-
-/*******************************************************************************
  * Global Variables
  ******************************************************************************/
-LiquidCrystal lcd(12, 11, 5, 4, 3, 2); // Pins attached to LCD screen
+LiquidCrystal lcd(8,9,10,11,12,13); // Pins attached to LCD screen
 Keypad keypad = Keypad(makeKeymap(keys),
                 row_pins,
                 col_pins,
@@ -100,6 +112,129 @@ Keypad keypad = Keypad(makeKeymap(keys),
 /*******************************************************************************
  * Functions
  ******************************************************************************/
+void setup(void) {
+  lcd.begin(16, 2);
+  randomSeed(analogRead(0));
+} /* setup() */
+
+void loop(void) {
+  int secret_num = gen_secret_num(NUM_DIGITS);
+  lcd.setCursor(0, 0);
+  lcd.print("I'm thinking of");
+  lcd.setCursor(0, 1);
+  lcd.print("a " XSTR(NUM_DIGITS) "-digit number");
+  delay(3000);
+  lcd.clear();
+  lcd.print("Try to guess it!");
+  delay(3000);
+  lcd.clear();
+
+  play_game(secret_num);
+} /* loop() */
+
+void play_game(int secret_num) {
+  int n_guesses = 1;
+  struct numstr guess;
+  while (n_guesses <= MAX_GUESSES) {
+    int result = play_round(secret_num, n_guesses);
+    if (result) {
+      break;
+    }
+    n_guesses++;
+  } /* while(guesses...) */
+} /* play_game() */
+
+int play_round(int secret_num, int n_guesses) {
+  lcd.setCursor(0,0);
+  lcd.print(MAX_GUESSES - (n_guesses - 1));
+  lcd.print(" guesses left!");
+  struct numstr guess = get_guess();
+
+  /* Calculate and print clues */
+  struct clues clues = get_clues(&guess, secret_num);
+  lcd.setCursor(0, 0);
+  lcd.print("You guessed ");
+  lcd.print(guess.val);
+  lcd.print(": ");
+  lcd.setCursor(0, 1);
+  for (int i = 0; i < clues.len; ++i) {
+    lcd.print(clues.strs[i]);
+    if (i < clues.len - 1) {
+      lcd.print(",");
+    }
+  } /* for(i..) */
+  delay(5000);
+  lcd.clear();
+
+  /* They guessed the number! */
+  if (guess.val == secret_num) {
+    lcd.print(guess.chars[0]);
+    return 1;
+  }
+
+  if (n_guesses >= MAX_GUESSES) {
+    lcd.setCursor(0, 0);
+    lcd.print("You lose!");
+    lcd.setCursor(0, 1);
+    lcd.print("My # was: ");
+    lcd.print(secret_num);
+    delay(5000);
+    return 1;
+  }
+  return 0;
+} /* play_round() */
+
+/**
+ * @brief Returns a set of strings with the pico, fermi, bagels clues to the
+ * user.
+ */
+struct clues get_clues(const struct numstr* const guess, int secret_num) {
+  struct clues result;
+  result.len = 0;
+  lcd.setCursor(0,1);
+
+  if (guess->val == secret_num) {
+    result.strs[result.len++] = kCorrect;
+    return result;
+  }
+
+  for (int i = NUM_DIGITS - 1; i >= 0; --i) {
+    if (nth_digit(guess->val, i) == nth_digit(secret_num, i)) {
+      result.strs[result.len++] = kFermi;
+    } else if (contains_digit(guess->val, nth_digit(secret_num, i))) {
+      result.strs[result.len++] = kPico;
+    }
+  } /* for(i..) */
+
+  if (0 == result.len) {
+    result.strs[result.len++] = kBAGELS;
+  }
+
+  return result;
+} /* get_clues() */
+
+
+struct numstr get_guess(void) {
+  struct numstr guess;
+  guess.len = 0;
+  while(1) {
+    char key = keypad.getKey();
+    if (NO_KEY == key) {
+      continue;
+    }
+    guess.chars[guess.len++] = key;
+    if (NUM_DIGITS == guess.len) {
+      char val[NUM_DIGITS];
+      for (int i = 0; i < NUM_DIGITS; ++i) {
+        val[i] = guess.chars[i];
+      } /* for(i..) */
+      guess.val = atoi(val);
+      break;
+    }
+  } /* while(1) */
+  return guess;
+} /* get_guess() */
+
 /**
  * @brief Returns a random number with the specified # of digits
  */
@@ -120,97 +255,14 @@ int nth_digit(int num, int digit) {
 } /* nth_digit() */
 
 /**
- * @brief Returns TRUE if any of the digits in num is digit, and FALSE
+ * @brief Returns TRUE if any of the digits in num is 'digit', and FALSE
  * otherwise.
  */
 int contains_digit(int num, int digit) {
-  return nth_digit(num, 0) == digit ||
-      nth_digit(num, 1) == digit ||
-      nth_digit(num, 2) == digit;
-} /* contains_digit() */
-/**
- * @brief Returns a string with the pico, fermi, bagels clues to the user.
- */
-struct clues get_clues(const struct numstr* const guess, int secret_num) {
-  struct clues result;
-  result.len = 0;
-  if (guess->val == secret_num) {
-    result.strs[result.len++] = kCorrect;
-    return result;
-  }
-
-  for (int i = 0; i < 3; ++i) {
-    if (nth_digit(guess->val, i) == nth_digit(secret_num, i)) {
-      result.strs[result.len++] = kFermi;
-    } else if (contains_digit(guess->val, nth_digit(secret_num, i))) {
-      result.strs[result.len++] = kPico;
-    }
+  int contains = 0;
+  for (size_t i = 0; i < NUM_DIGITS; ++i) {
+    contains |= nth_digit(num, i) == digit;
   } /* for(i..) */
+  return contains;
+} /* contains_digit() */
 
-  if (0 == result.len) {
-    result.strs[result.len++] = kBAGELS;
-  }
-  return result;
-} /* get_clues() */
-
-void setup(void) {
-  lcd.begin(16, 2);
-} /* setup() */
-
-struct numstr get_guess(void) {
-  struct numstr guess;
-  guess.len = 0;
-  while(1) {
-    char key = keypad.getKey();
-    if (NO_KEY == key) {
-      continue;
-    }
-    guess.chars[guess.len++] = key;
-    if (3 == guess.len) {
-      char val[3];
-      for (int i = 0; i < 3; ++i) {
-        val[i] = guess.chars[i];
-      } /* for(i..) */
-      guess.val = atoi(val);
-      break;
-    }
-  } /* while(1) */
-  return guess;
-} /* get_guess() */
-
-void loop(void) {
-  int secret_num = gen_secret_num(3);
-  lcd.setCursor(0, 0);
-  lcd.print("I have thought up a 3-digit number. You have " XSTR(MAX_GUESSES) "guesses to get it.");
-
-  int n_guesses = 1;
-  struct numstr guess;
-  while (n_guesses <= MAX_GUESSES) {
-    struct numstr guess = get_guess();
-
-    /* They guessed the number! */
-    if (guess.val == secret_num) {
-      lcd.print(guess.chars[0]);
-      break;
-    }
-
-    /* They guessed wrong--calculate and print their clues */
-    struct clues clues = get_clues(&guess, secret_num);
-    lcd.setCursor(0, 0);
-    for (int i = 0; i < clues.len; ++i) {
-      lcd.print(clues.strs[i]);
-      lcd.print(",");
-    } /* for(i..) */
-
-    ++n_guesses;
-    lcd.setCursor(0, 1);
-    if (n_guesses > MAX_GUESSES) {
-      lcd.print("You ran out of guesses. The answer was:");
-      lcd.print(secret_num);
-      break;
-    } else {
-      lcd.print(MAX_GUESSES - n_guesses);
-      lcd.print(" guesses left.");
-    }
-  } /* while(guesses...) */
-} /* loop() */

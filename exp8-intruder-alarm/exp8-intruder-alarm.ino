@@ -103,7 +103,6 @@ void loop(void) {
   } else { /* no motion detected */
     security_reset();
   }
-  
 } /* loop() */
 
 /**
